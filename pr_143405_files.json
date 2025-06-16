@@ -1,0 +1,26 @@
+[
+  {
+    "sha": "8ef5f98c612d24c67bad7b8ea18d3f9f1ed4f521",
+    "filename": "openmp/CMakeLists.txt",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/llvm/llvm-project/blob/5ca376c53fe5b5756dd5c010ad9863831a6ec51f/openmp%2FCMakeLists.txt",
+    "raw_url": "https://github.com/llvm/llvm-project/raw/5ca376c53fe5b5756dd5c010ad9863831a6ec51f/openmp%2FCMakeLists.txt",
+    "contents_url": "https://api.github.com/repos/llvm/llvm-project/contents/openmp%2FCMakeLists.txt?ref=5ca376c53fe5b5756dd5c010ad9863831a6ec51f",
+    "patch": "@@ -115,7 +115,7 @@ option(OPENMP_ENABLE_LIBOMPTARGET \"Enable building libomptarget for offloading.\"\n option(OPENMP_ENABLE_LIBOMP_PROFILING \"Enable time profiling for libomp.\" OFF)\n \n # Header install location\n-if(${OPENMP_STANDALONE_BUILD})\n+if(\"${OPENMP_STANDALONE_BUILD}\" OR NOT Clang_DIR)\n   set(LIBOMP_HEADERS_INSTALL_PATH \"${CMAKE_INSTALL_INCLUDEDIR}\")\n else()\n   include(GetClangResourceDir)"
+  },
+  {
+    "sha": "3daab37f2d92a3e26d1583671f5e815c14879ce3",
+    "filename": "openmp/runtime/src/CMakeLists.txt",
+    "status": "modified",
+    "additions": 1,
+    "deletions": 1,
+    "changes": 2,
+    "blob_url": "https://github.com/llvm/llvm-project/blob/5ca376c53fe5b5756dd5c010ad9863831a6ec51f/openmp%2Fruntime%2Fsrc%2FCMakeLists.txt",
+    "raw_url": "https://github.com/llvm/llvm-project/raw/5ca376c53fe5b5756dd5c010ad9863831a6ec51f/openmp%2Fruntime%2Fsrc%2FCMakeLists.txt",
+    "contents_url": "https://api.github.com/repos/llvm/llvm-project/contents/openmp%2Fruntime%2Fsrc%2FCMakeLists.txt?ref=5ca376c53fe5b5756dd5c010ad9863831a6ec51f",
+    "patch": "@@ -11,7 +11,7 @@\n include(ExtendPath)\n \n # The generated headers will be placed in clang's resource directory if present.\n-if(OPENMP_STANDALONE_BUILD OR NOT LLVM_RUNTIMES_BUILD)\n+if(OPENMP_STANDALONE_BUILD OR NOT LLVM_RUNTIMES_BUILD OR NOT Clang_DIR)\n   set(LIBOMP_HEADERS_INTDIR ${CMAKE_CURRENT_BINARY_DIR})\n else()\n   set(LIBOMP_HEADERS_INTDIR ${LLVM_BINARY_DIR}/${LIBOMP_HEADERS_INSTALL_PATH})"
+  }
+]
