@@ -6,6 +6,7 @@ unsigned short checksum(int count){
     int i, sum=0;
 
     printf("Enter the IP data in 16 words\n");
+    //4500 003c 1c46 4000 4006 b1e6 c0a8 0001 c0a8 00c7
 
     for(i=0; i<count; i++){
         scanf("%x", &fields[i]);

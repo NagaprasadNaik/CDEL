@@ -5,26 +5,39 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
-#include<stdlib.h>
+#include <stdlib.h>
 #include <unistd.h> 
-#define H_PORT 12345
-#define H_GRP "239.0.0.1"
 
-int main(){
-    int sockfd;
-    struct sockaddr_in address;
-    char *msg = "RVCE-CSE";
+#define HELLO_PORT 12345
+#define HELLO_GROUP "225.0.0.37"
+ 
+int main()
+{
+struct sockaddr_in addr;
+int fd, cnt;
+//struct ip_mreq mreq;
+char *message="RVCE-CSE";
+ 
+ 	/* create what looks like an ordinary UDP socket */
+if ((fd=socket(AF_INET,SOCK_DGRAM,0)) < 0) {
+  	perror("socket");
+  	exit(1);
+ 	}
+ 
+ 	/* set up destination address */
+memset(&addr,0,sizeof(addr));
+addr.sin_family=AF_INET;
+addr.sin_addr.s_addr=inet_addr(HELLO_GROUP);
+addr.sin_port=htons(HELLO_PORT);
+ 
+ 	/* now just sendto() our destination! */
+while (1) {
+  	if (sendto(fd,message,sizeof(message),0,(struct sockaddr *) &addr,sizeof(addr)) < 0) {
+  		perror("sendto");
+  		exit(1);
+  	  }
 
-    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-
-    address.sin_family = AF_INET;
-    address.sin_port = htons(H_PORT);
-    address.sin_addr.s_addr = inet_addr(H_GRP);
-
-    while(1){
-        sendto(sockfd, msg, strlen(msg), 0, (struct sockaddr*)&address, sizeof(address));
-        printf("Sent: %s\n", msg);
-        sleep(1);
-    }
-    return 0;
+  	sleep(1);
+ 	}
 }
+ 

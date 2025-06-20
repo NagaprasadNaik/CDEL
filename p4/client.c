@@ -6,51 +6,56 @@
 #include <string.h>
 #include <stdio.h>
 #include<stdlib.h>
+ 
+#define HELLO_PORT 12345
+#define HELLO_GROUP "225.0.0.37"
+#define MSGBUFSIZE 25
+ 
+int main()
+{
+struct sockaddr_in addr;
+int fd, nbytes,addrlen;
+struct ip_mreq mreq;
+char msgbuf[MSGBUFSIZE];
+ 
+u_int yes=1;        	
+if ((fd=socket(AF_INET,SOCK_DGRAM,0)) < 0) {
+  	perror("socket");
+  	exit(1);
+ 	}
 
-#define H_GRP "239.0.0.1"
-#define H_PORT 12345
 
-int main(){
-    int sockfd, addrlen;
-    struct sockaddr_in address;
-    struct ip_mreq mreq;
-    u_int yes=1;
-    int buffsize=1024, cont;
-    char *buffer = malloc(buffsize);
-    
+if (setsockopt(fd,SOL_SOCKET,SO_REUSEADDR,&yes,sizeof(yes)) < 0) {
+perror("Reusing ADDR failed");
+exit(1);
+   	}
 
-    if((sockfd=socket(AF_INET, SOCK_DGRAM, 0))>0){
-        printf("created\n");
-    }
-
-    if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes))<0){
-        printf("sock error\n");
-        exit(1);
-    }
-
-    address.sin_family = AF_INET;
-    address.sin_port = htons(H_PORT);
-    address.sin_addr.s_addr = htonl(INADDR_ANY);
-
-    if((bind(sockfd, (struct sockaddr*)&address, sizeof(address)))==0){
-        printf("Binded\n");
-    }
-
-    mreq.imr_multiaddr.s_addr = inet_addr(H_GRP);
-    mreq.imr_interface.s_addr = htonl(INADDR_ANY);
-    if(setsockopt(sockfd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq))<0){
-        printf("ip error\n");
-        exit(1);
-    }
-
-    while(1){
-        addrlen = sizeof(address);
-        int d = recvfrom(sockfd, buffer, buffsize, 0, (struct sockaddr*)&address, &addrlen);
-        if(d < 0){
-            perror("recvfrom");
-            exit(1);
-        }   
-        buffer[d] = '\0';
-        fputs(buffer, stdout);
-    }
+	   
+memset(&addr,0,sizeof(addr));
+addr.sin_family=AF_INET;
+addr.sin_addr.s_addr=htonl(INADDR_ANY); addr.sin_port=htons(HELLO_PORT);
+ 
+ 	/* bind to receive address */
+if (bind(fd,(struct sockaddr *) &addr,sizeof(addr)) < 0) {
+  	perror("bind");
+  	exit(1);
+ 	}
+ 
+ 	/* use setsockopt() to request that the kernel join a multicast group */
+mreq.imr_multiaddr.s_addr=inet_addr(HELLO_GROUP);
+mreq.imr_interface.s_addr=htonl(INADDR_ANY);
+if (setsockopt(fd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) < 0) {
+  	perror("setsockopt");
+  	exit(1);
+ 	}
+ 
+ 	/* now just enter a read-print loop */
+while (1) {
+  	addrlen=sizeof(addr);
+  	if ((nbytes=recvfrom(fd,msgbuf,MSGBUFSIZE,0, (struct sockaddr *) &addr,&addrlen)) < 0) {
+  		perror("recvfrom");
+  	  }
+	
+  	puts(msgbuf);
+ 	}
 }
