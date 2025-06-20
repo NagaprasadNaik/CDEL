@@ -1,4 +1,0 @@
-//coooment
-/* this is 
-mulitline comment 
-second line */
